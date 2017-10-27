@@ -565,7 +565,13 @@ public class Bridge extends PrecompiledContracts.PrecompiledContract {
         logger.trace("createFederation");
 
         int numberOfSignaturesRequired = ((BigInteger) args[0]).intValue();
-        return bridgeSupport.createFederation(numberOfSignaturesRequired);
+        try {
+            return bridgeSupport.createFederation(numberOfSignaturesRequired);
+        } catch (IOException e) {
+            logger.warn("Exception in createFederation", e);
+            throw new RuntimeException("Exception in createFederation", e);
+        }
+
     }
 
     public Integer addFederatorPublicKey(Object[] args)
@@ -602,7 +608,12 @@ public class Bridge extends PrecompiledContracts.PrecompiledContract {
     {
         logger.trace("commitFederation");
 
-        return bridgeSupport.commitFederation();
+        try {
+            return bridgeSupport.commitFederation();
+        } catch (IOException e) {
+            logger.warn("Exception in commitFederation", e);
+            throw new RuntimeException("Exception in commitFederation", e);
+        }
     }
 
     public Integer rollbackFederation(Object[] args)
