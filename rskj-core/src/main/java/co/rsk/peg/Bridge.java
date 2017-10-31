@@ -575,7 +575,8 @@ public class Bridge extends PrecompiledContracts.PrecompiledContract {
         Address address = bridgeSupport.getRetiringFederationAddress();
 
         if (address == null) {
-            return null;
+            // When there's no address, empty string is returned
+            return "";
         }
 
         return address.toString();
@@ -600,7 +601,14 @@ public class Bridge extends PrecompiledContracts.PrecompiledContract {
         logger.trace("getRetiringFederatorPublicKey");
 
         int index = ((BigInteger) args[0]).intValue();
-        return bridgeSupport.getRetiringFederatorPublicKey(index);
+        byte[] publicKey = bridgeSupport.getRetiringFederatorPublicKey(index);
+
+        if (publicKey == null) {
+            // Empty array is returned when public key is not found or there's no retiring federation
+            return new byte[]{};
+        }
+
+        return publicKey;
     }
 
     public Long getRetiringFederationCreationTime(Object[] args)
@@ -610,7 +618,8 @@ public class Bridge extends PrecompiledContracts.PrecompiledContract {
         Instant creationTime = bridgeSupport.getRetiringFederationCreationTime();
 
         if (creationTime == null) {
-            return null;
+            // -1 is returned when no retiring federation
+            return -1L;
         }
 
         // Return the creation time in milliseconds from the epoch
@@ -706,6 +715,13 @@ public class Bridge extends PrecompiledContracts.PrecompiledContract {
         logger.trace("getPendingFederatorPublicKey");
 
         int index = ((BigInteger) args[0]).intValue();
-        return bridgeSupport.getPendingFederatorPublicKey(index);
+        byte[] publicKey = bridgeSupport.getPendingFederatorPublicKey(index);
+
+        if (publicKey == null) {
+            // Empty array is returned when public key is not found
+            return new byte[]{};
+        }
+
+        return publicKey;
     }
 }
