@@ -18,6 +18,7 @@
 
 package co.rsk.test;
 
+import co.rsk.config.RskSystemProperties;
 import co.rsk.core.bc.BlockChainImpl;
 import co.rsk.core.bc.BlockChainImplTest;
 import co.rsk.core.bc.BlockExecutor;
@@ -65,7 +66,8 @@ public class World {
         BlockNodeInformation nodeInformation = new BlockNodeInformation();
         SyncConfiguration syncConfiguration = SyncConfiguration.IMMEDIATE_FOR_TESTING;
         BlockSyncService blockSyncService = new BlockSyncService(store, blockChain, nodeInformation, syncConfiguration, new SimpleChannelManager());
-        this.blockProcessor = new NodeBlockProcessor(store, blockChain, nodeInformation, blockSyncService, syncConfiguration);
+        this.blockProcessor = new NodeBlockProcessor(RskSystemProperties.CONFIG, store, blockChain, nodeInformation, blockSyncService);
+
     }
 
     public NodeBlockProcessor getBlockProcessor() { return this.blockProcessor; }

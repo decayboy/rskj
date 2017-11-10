@@ -18,6 +18,7 @@
 
 package co.rsk.net;
 
+import co.rsk.config.RskSystemProperties;
 import co.rsk.net.simples.SimpleMessageChannel;
 import co.rsk.net.sync.SyncConfiguration;
 import co.rsk.test.builders.BlockBuilder;
@@ -150,7 +151,7 @@ public class NodeBlockProcessorUnclesTest {
         BlockNodeInformation nodeInformation = new BlockNodeInformation();
         SyncConfiguration syncConfiguration = SyncConfiguration.IMMEDIATE_FOR_TESTING;
         BlockSyncService blockSyncService = new BlockSyncService(store, blockChain, nodeInformation, syncConfiguration, new SimpleChannelManager());
-        NodeBlockProcessor processor = new NodeBlockProcessor(store, blockChain, nodeInformation, blockSyncService, syncConfiguration);
+        NodeBlockProcessor processor = new NodeBlockProcessor(RskSystemProperties.CONFIG, store, blockChain, nodeInformation, blockSyncService);
 
         return processor;
     }

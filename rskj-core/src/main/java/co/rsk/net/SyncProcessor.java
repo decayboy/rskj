@@ -73,7 +73,7 @@ public class SyncProcessor implements SyncEventsHandler {
         logger.trace("Process skeleton response from node {}", peer.getPeerNodeID());
         peerStatuses.getOrRegisterPeer(peer);
 
-        if (!pendingMessages.isPending(message.getId(), message.getMessageType())){
+        if (!pendingMessages.isPending(message)){
             peerScoringManager.recordEvent(peer.getPeerNodeID(), null, EventType.UNEXPECTED_MESSAGE);
             return;
         }
@@ -85,7 +85,7 @@ public class SyncProcessor implements SyncEventsHandler {
         logger.trace("Process block hash response from node {} hash {}", peer.getPeerNodeID(), HashUtil.shortHash(message.getHash()));
         peerStatuses.getOrRegisterPeer(peer);
 
-        if (!pendingMessages.isPending(message.getId(), message.getMessageType())){
+        if (!pendingMessages.isPending(message)){
             peerScoringManager.recordEvent(peer.getPeerNodeID(), null, EventType.UNEXPECTED_MESSAGE);
             return;
         }
@@ -97,7 +97,7 @@ public class SyncProcessor implements SyncEventsHandler {
         logger.trace("Process block headers response from node {}", peer.getPeerNodeID());
         peerStatuses.getOrRegisterPeer(peer);
 
-        if (!pendingMessages.isPending(message.getId(), message.getMessageType())){
+        if (!pendingMessages.isPending(message)){
             peerScoringManager.recordEvent(peer.getPeerNodeID(), null, EventType.UNEXPECTED_MESSAGE);
             return;
         }
@@ -109,7 +109,7 @@ public class SyncProcessor implements SyncEventsHandler {
         logger.trace("Process body response from node {}", peer.getPeerNodeID());
         peerStatuses.getOrRegisterPeer(peer);
 
-        if (!pendingMessages.isPending(message.getId(), message.getMessageType())){
+        if (!pendingMessages.isPending(message)){
             peerScoringManager.recordEvent(peer.getPeerNodeID(), null, EventType.UNEXPECTED_MESSAGE);
             return;
         }
@@ -146,7 +146,7 @@ public class SyncProcessor implements SyncEventsHandler {
         logger.trace("Process block response from node {} block {} {}", peer.getPeerNodeID(), message.getBlock().getNumber(), message.getBlock().getShortHash());
         peerStatuses.getOrRegisterPeer(peer);
 
-        if (!pendingMessages.isPending(message.getId(), message.getMessageType())){
+        if (!pendingMessages.isPending(message)){
             peerScoringManager.recordEvent(peer.getPeerNodeID(), null, EventType.UNEXPECTED_MESSAGE);
             return;
         }
@@ -242,7 +242,7 @@ public class SyncProcessor implements SyncEventsHandler {
     }
 
     @VisibleForTesting
-    int getNoPeers() {
+    int getPeersCount() {
         return this.peerStatuses.count();
     }
 
@@ -253,7 +253,7 @@ public class SyncProcessor implements SyncEventsHandler {
         if (chainStatus == null)
             return this.peerStatuses.count();
 
-        return this.peerStatuses.countIf(s -> chainStatus.hasLowerDifficulty(s.getStatus()));
+        return this.peerStatuses.countIf(s -> chainStatus.hasLowerTotalDifficultyThan(s.getStatus()));
     }
 
     @VisibleForTesting
@@ -307,9 +307,9 @@ public class SyncProcessor implements SyncEventsHandler {
         public boolean hasLowerDifficulty(NodeID nodeID) {
             Status status = getPeerStatus(nodeID).getStatus();
             boolean hasTotalDifficulty = status.getTotalDifficulty() != null;
-            return  (hasTotalDifficulty && blockchain.getStatus().hasLowerDifficulty(status)) ||
-                    // this works only for testing purposes, real status without difficulty dont reach this far
-                    (!hasTotalDifficulty && blockchain.getStatus().getBestBlockNumber() < status.getBestBlockNumber());
+            return  (hasTotalDifficulty && blockchain.getStatus().hasLowerTotalDifficultyThan(status)) ||
+                // this works only for testing purposes, real status without difficulty dont reach this far
+                (!hasTotalDifficulty && blockchain.getStatus().getBestBlockNumber() < status.getBestBlockNumber());
         }
 
         @Override

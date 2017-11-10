@@ -23,7 +23,6 @@ import co.rsk.net.messages.*;
 import co.rsk.scoring.EventType;
 import co.rsk.scoring.PeerScoringManager;
 import co.rsk.validators.BlockValidationRule;
-import com.google.common.annotations.VisibleForTesting;
 import org.ethereum.core.Block;
 import org.ethereum.core.PendingState;
 import org.ethereum.core.Transaction;
@@ -273,6 +272,12 @@ public class NodeMessageHandler implements MessageHandler, Runnable {
     private void processBlockMessage(@Nonnull final MessageChannel sender, @Nonnull final BlockMessage message) {
         final Block block = message.getBlock();
         logger.trace("Process block {} {}", block.getNumber(), block.getShortHash());
+
+        if (block.isGenesis()) {
+            logger.trace("Skip block processing {} {}", block.getNumber(), block.getShortHash());
+            return;
+        }
+
         Metrics.processBlockMessage("start", block, sender.getPeerNodeID());
 
         boolean wasOrphan = !this.blockProcessor.hasBlockInSomeBlockchain(block.getHash());
